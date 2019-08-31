@@ -54,7 +54,7 @@ namespace VariaRx
             UpdateEntriesTimer.Start();
 
         }
-        //Test commit
+        
         internal void UpdateEntries_Tick(object sender, EventArgs e)
         {
             if (targetPointSem.Wait(0) == false) return;
