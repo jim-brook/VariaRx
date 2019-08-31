@@ -36,9 +36,10 @@ namespace VariaRx
         internal readonly int SLOW_SPEED = 10;
         internal readonly int MED_SPEED = 20;
         internal readonly int HIGH_SPEED = 30;
-        internal readonly int TARGET_SIZE = 15;
+        internal readonly int TARGET_SIZE = 10;
         internal readonly int GRAY_OUT_TIME = 5;
         internal readonly int REMOVE_TIME = 8;
+        internal readonly int DISP_FONT_SIZE = 6;
         internal SemaphoreSlim targetPointSem;
         internal System.Windows.Forms.Timer UpdateEntriesTimer;
 
@@ -49,7 +50,7 @@ namespace VariaRx
             Context = cntxt;
             TargetList = new Dictionary<int, DRAW_STRUCT>();
             UpdateEntriesTimer = new System.Windows.Forms.Timer();
-            UpdateEntriesTimer.Interval = 5000; // specify interval time as you want
+            UpdateEntriesTimer.Interval = 1000; // specify interval time as you want
             UpdateEntriesTimer.Tick += new EventHandler(UpdateEntries_Tick);
             UpdateEntriesTimer.Start();
 
@@ -138,14 +139,14 @@ namespace VariaRx
                 targetDraw.TimeStamp = DateTime.Now;
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget1);
                 targetDraw.distance = CovertMtoF(target.RangeTarget1);
-                targetDraw.targetText = "[1]\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT";
+                targetDraw.targetText = "[1] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
                 targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
-                targetDraw.targetTextFont = new System.Drawing.Font("Arial", 8);
+                targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
                 targetDraw.targetTextColor = targetDraw.targetColor;
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
-                targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
+                targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);    
                 TargetList[1] = targetDraw;
                 updated = true;
             }
@@ -155,10 +156,10 @@ namespace VariaRx
                 targetDraw.TimeStamp = DateTime.Now;
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget2);
                 targetDraw.distance = CovertMtoF(target.RangeTarget2);
-                targetDraw.targetText = "[2]\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT";
+                targetDraw.targetText = "[2] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
                 targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
-                targetDraw.targetTextFont = new System.Drawing.Font("Arial", 8);
+                targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
@@ -171,10 +172,10 @@ namespace VariaRx
                 targetDraw.TimeStamp = DateTime.Now;
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget3);
                 targetDraw.distance = CovertMtoF(target.RangeTarget3);
-                targetDraw.targetText = "[3]\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT";
+                targetDraw.targetText = "[3] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
                 targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
-                targetDraw.targetTextFont = new System.Drawing.Font("Arial", 8);
+                targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
@@ -187,10 +188,10 @@ namespace VariaRx
                 targetDraw.TimeStamp = DateTime.Now;
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget4);
                 targetDraw.distance = CovertMtoF(target.RangeTarget4);
-                targetDraw.targetText = "[4]\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT";
+                targetDraw.targetText = "[4] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
                 targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
-                targetDraw.targetTextFont = new System.Drawing.Font("Arial", 8);
+                targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
@@ -203,10 +204,10 @@ namespace VariaRx
                 targetDraw.TimeStamp = DateTime.Now;
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget5);
                 targetDraw.distance = CovertMtoF(target.RangeTarget5);
-                targetDraw.targetText = "[5]\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT";
+                targetDraw.targetText = "[5] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
                 targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
-                targetDraw.targetTextFont = new System.Drawing.Font("Arial", 8);
+                targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
@@ -219,10 +220,10 @@ namespace VariaRx
                 targetDraw.TimeStamp = DateTime.Now;
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget6);
                 targetDraw.distance = CovertMtoF(target.RangeTarget6);
-                targetDraw.targetText = "[6]\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT";
+                targetDraw.targetText = "[6] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
                 targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
-                targetDraw.targetTextFont = new System.Drawing.Font("Arial", 8);
+                targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
@@ -235,10 +236,10 @@ namespace VariaRx
                 targetDraw.TimeStamp = DateTime.Now;
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget7);
                 targetDraw.distance = CovertMtoF(target.RangeTarget7);
-                targetDraw.targetText = "[7]\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT";
+                targetDraw.targetText = "[7] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
                 targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
-                targetDraw.targetTextFont = new System.Drawing.Font("Arial", 8);
+                targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
@@ -251,10 +252,10 @@ namespace VariaRx
                 targetDraw.TimeStamp = DateTime.Now;
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget8);
                 targetDraw.distance = CovertMtoF(target.RangeTarget8);
-                targetDraw.targetText = "[8]\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT";
+                targetDraw.targetText = "[8] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
                 targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
-                targetDraw.targetTextFont = new System.Drawing.Font("Arial", 8);
+                targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
@@ -266,7 +267,7 @@ namespace VariaRx
         internal Point[] PlotTargetPosition(int range, TargetVars.ThreatSideBitField targetSide)
         {            
             double targetRange = Convert.ToDouble(range);
-            double scalerY = Convert.ToDouble(this.Height) / 459.0f; //459ft is max range of garmin unit
+            double scalerY = Convert.ToDouble(this.Height) / 645.75f; //645.75 ft is max range of garmin unit Page 20 ANT+ Managed Network Document – Bike Radar Device Profile, Rev 1.0
             int scalerX = this.Width;
             int TARGET_SIDE_LEFT = TARGET_SIZE;
             int TARGET_SIDE_MIDDLE = scalerX/2;
@@ -290,7 +291,6 @@ namespace VariaRx
             int x1 = x3 - TARGET_SIZE;
 
             int y3 = Convert.ToInt32(scalerY * targetRange);
-            Console.WriteLine("Distance: " + y3.ToString());
             int y2 = y3 + TARGET_SIZE;
             int y1 = y3 + TARGET_SIZE;
             Point[] points = { new Point(x1, y1), new Point(x2, y2), new Point(x3, y3) };
@@ -321,14 +321,25 @@ namespace VariaRx
             }
 
         }
-        internal int ConvertMetersSecToMPH(byte Mps)
+        internal int ConvertMetersSecToMPH(byte unitsMetersPerSeconds)
         {
-            return Convert.ToInt32(2.23694f * Convert.ToDouble(Mps));
+            //1 unit = 3.04m/s PG 20 ANT+ Managed Network Document – Bike Radar Device Profile, Rev 1.0
+            double units = Convert.ToDouble(unitsMetersPerSeconds);
+            double speedPerUnits = 3.04f;
+            double speedInMetersPerSecond = speedPerUnits * units;
+            double speedInMPH = 2.23694f * speedInMetersPerSecond;
+            return Convert.ToInt32(speedInMPH);
         }
-        internal int CovertMtoF(byte meters)
+        internal int CovertMtoF(byte unitMeters)
         {
-            double feetPerMeter = 10.252625;
-            return Convert.ToInt32(Convert.ToDouble(meters) * feetPerMeter);
+            //1 unit = 3.125m PG 20 ANT+ Managed Network Document – Bike Radar Device Profile, Rev 1.0
+
+            double units = Convert.ToDouble(unitMeters);
+            double distancePerUnit = 3.125f;
+            double distanceMeters = distancePerUnit * units;
+            double feetPerMeter = 3.28084;
+            double distanceFeet = distanceMeters * feetPerMeter;
+            return Convert.ToInt32(distanceFeet);
         }
 
 

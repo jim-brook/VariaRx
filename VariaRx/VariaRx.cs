@@ -14,7 +14,7 @@ namespace VariaRx
 {
     internal partial class VariaRx : Form
     {        
-        internal static readonly byte[] USER_NETWORK_KEY = { };
+        internal static readonly byte[] USER_NETWORK_KEY = { 0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45 };
         internal static readonly byte USER_NETWORK_NUM = 0;
         internal ANT_Device device0;
         internal ANT_Channel channel0;
@@ -121,7 +121,7 @@ namespace VariaRx
             device0.ResetSystem();
             System.Threading.Thread.Sleep(500);
 
-            Console.WriteLine("Setting network key...");
+            Console.WriteLine("Setting network key..."); 
             if (device0.setNetworkKey(USER_NETWORK_NUM, USER_NETWORK_KEY, 500))
                 Console.WriteLine("Network key set");
             else
@@ -166,7 +166,7 @@ namespace VariaRx
             targVars.ThreatSideTarget2 = (TargetVars.ThreatSideBitField)targs.ThreatSideTarget2;
             targVars.ThreatSideTarget3 = (TargetVars.ThreatSideBitField)targs.ThreatSideTarget3;
             targVars.ThreatSideTarget4 = (TargetVars.ThreatSideBitField)targs.ThreatSideTarget4;
-            
+            //Console.WriteLine(targVars.SpeedTarget1.ToString() + ":" + targVars.RangeTarget1.ToString());
             lock (VariaAppExt.TargetQueueLock)
             {
                 VariaAppExt.TargetQueue.Add(targVars);
