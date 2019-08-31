@@ -14,13 +14,12 @@ namespace VariaRx
 {
     internal partial class VariaRx : Form
     {        
-        internal static readonly byte[] USER_NETWORK_KEY = { 0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45 };
+        internal static readonly byte[] USER_NETWORK_KEY = { };
         internal static readonly byte USER_NETWORK_NUM = 0;
         internal ANT_Device device0;
         internal ANT_Channel channel0;
         internal BikeRadarDisplay radarEquipmentDisplay;
         internal Network networkAntPlus = new Network(USER_NETWORK_NUM, USER_NETWORK_KEY, 57);
-        internal bool bDone;
         internal ushort usValue = 0;
         internal struct APP_EXT
         {
@@ -350,16 +349,7 @@ namespace VariaRx
                                 {
                                     if (response.getChannelEventCode() == ANT_ReferenceLibrary.ANTEventID.CHANNEL_IN_WRONG_STATE_0x15)
                                     {
-                                        Console.WriteLine("Channel is already closed");                                        
-                                        break;
-                                        Console.WriteLine("Unassigning Channel...");
-                                        if (channel0.unassignChannel(500))
-                                        {
-                                            Console.WriteLine("Unassigned Channel");
-                                            Console.WriteLine("Press enter to exit");
-                                            bDone = true;
-                                        }
-
+                                        Console.WriteLine("Channel is already closed");   
                                     }
                                     break;
                                 }
