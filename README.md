@@ -9,8 +9,12 @@ Validate functionality of ThreatSideTargetX data from device
 Validate against multiple targets
 
 Validate target display form using multiple targets
+
 Validate target display using valid ThreatSideTargetX data
+
 Cover corner cases when "Stop" button is pressed
+
 Add 'LED' to main form indicating device connection status
+
 Lot's more stability testing
 
