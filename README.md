@@ -6,9 +6,9 @@ the source for this .dll or a port to Linux please let me know and open an issue
 To do's:
 Validate functionality of ThreatSideTargetX data from device
 
-Validate against multiple targets
+Validate received data from multiple targets
 
-Validate target display form using multiple targets
+Validate target display form (TargetDisplay.cs) using multiple targets
 
 Validate target display using valid ThreatSideTargetX data
 
