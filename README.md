@@ -16,5 +16,5 @@ Cover corner cases when "Stop" button is pressed
 
 Add 'LED' to main form indicating device connection status
 
-Lot's more stability testing
+A lot more stability testing
 
