@@ -128,8 +128,8 @@ namespace VariaRx
                 throw new Exception("Error configuring network key");
 
             Console.WriteLine("Setting Channel ID...");
-            channel0.setChannelSearchTimeout((byte)1, 1);
-            if (channel0.setChannelID(1, false, 17, 0, 8192))
+            channel0.setChannelSearchTimeout((byte)100, 100);
+            if (channel0.setChannelID(0, false, 40, 0, 8192))
             {
                 
                 Console.WriteLine("Channel ID set");

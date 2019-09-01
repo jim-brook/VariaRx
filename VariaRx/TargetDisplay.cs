@@ -33,13 +33,13 @@ namespace VariaRx
         internal Dictionary<int, DRAW_STRUCT> TargetList;
         internal readonly int MAX_TARGETS = 8;
         internal readonly int NO_SPEED = 0;
-        internal readonly int SLOW_SPEED = 10;
-        internal readonly int MED_SPEED = 20;
-        internal readonly int HIGH_SPEED = 30;
+        internal readonly int SLOW_SPEED = 7;
+        internal readonly int MED_SPEED = 14;
+        internal readonly int HIGH_SPEED = 21;
         internal readonly int TARGET_SIZE = 10;
         internal readonly int GRAY_OUT_TIME = 5;
         internal readonly int REMOVE_TIME = 8;
-        internal readonly int DISP_FONT_SIZE = 6;
+        internal readonly int DISP_FONT_SIZE = 7;
         internal SemaphoreSlim targetPointSem;
         internal System.Windows.Forms.Timer UpdateEntriesTimer;
 
@@ -60,29 +60,29 @@ namespace VariaRx
         {
             if (targetPointSem.Wait(0) == false) return;
             DateTime currentTime = DateTime.Now;
-            for(int counter = 1; counter <= TargetList.Count; counter++)
+            for (int counter = 0; counter < 8; counter++)
             {
-                if (TargetList[counter].TimeStamp != null)
-                {
-                    TimeSpan diff = currentTime - TargetList[counter].TimeStamp;
-                    if ((diff.Seconds >= GRAY_OUT_TIME) && (diff.Seconds < REMOVE_TIME))
+                if (TargetList.TryGetValue(counter, out DRAW_STRUCT target))
+                {                    
+                    if (target.TimeStamp != null)
                     {
-                        if (TargetList.TryGetValue(counter, out DRAW_STRUCT targ))
+                        TimeSpan diff = currentTime - target.TimeStamp;
+                        if ((diff.Seconds >= GRAY_OUT_TIME) && (diff.Seconds < REMOVE_TIME))
                         {
+                            target.targetTextColor = new SolidBrush(Color.Gray);
+                            target.targetColor = new SolidBrush(Color.Gray);
                             TargetList.Remove(counter);
-                            targ.targetTextColor = new SolidBrush(Color.Gray);
-                            targ.targetColor = new SolidBrush(Color.Gray);
-                            TargetList.Add(counter, targ);
+                            TargetList.Add(counter, target);
+                        }
+                        else if (diff.Seconds > REMOVE_TIME)
+                        {
+                            //TargetList.Remove(counter); Already removed
                         }
                     }
-                    else if (diff.Seconds > REMOVE_TIME)
-                    {
-                        TargetList.Remove(counter);
-                    }
-                }                
-            }
-            this.Invalidate();
+                }
+            }            
             targetPointSem.Release();
+            this.Invalidate();
         }
         private void TargetDisplay_Paint(object sender, PaintEventArgs e)
         {
@@ -119,24 +119,26 @@ namespace VariaRx
         {
             bool wasUpdated = false;
             foreach (var valSet in vars)
-            {
-                if(CreateTargetPoint(valSet) == true)
+            {                                
+                if (CreateTargetPoint(valSet) == true)
                 {
                     wasUpdated = true;
                 }
             }
+            
             return wasUpdated;
-        }
+        } 
         internal bool CreateTargetPoint(TargetVars target)
         {
             bool updated = false;
-            var targetDraw = new DRAW_STRUCT();
-            targetDraw.targetPosition = new Point[3];
-            //add syc object
-
             if (target.RangeTarget1 != 0)
             {
+                if (TargetList.TryGetValue(1, out DRAW_STRUCT targetDraw))
+                {
+                    TargetList.Remove(1);
+                }
                 targetDraw.TimeStamp = DateTime.Now;
+                targetDraw.targetPosition = new Point[3];
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget1);
                 targetDraw.distance = CovertMtoF(target.RangeTarget1);
                 targetDraw.targetText = "[1] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
@@ -146,121 +148,170 @@ namespace VariaRx
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
                 targetDraw.targetTextColor = targetDraw.targetColor;
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
-                targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);    
-                TargetList[1] = targetDraw;
+                targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);          
+                TargetList.Add(1, targetDraw);
                 updated = true;
             }
 
             if (target.RangeTarget2 != 0)
             {
+                if (TargetList.TryGetValue(2, out DRAW_STRUCT targetDraw))
+                {
+                    TargetList.Remove(2);
+                }
                 targetDraw.TimeStamp = DateTime.Now;
+                targetDraw.targetPosition = new Point[3];
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget2);
                 targetDraw.distance = CovertMtoF(target.RangeTarget2);
-                targetDraw.targetText = "[2] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
+                targetDraw.targetText = "[2] " + target.ThreatSideTarget2.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
-                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
+                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget2);
                 targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
+                targetDraw.targetTextColor = targetDraw.targetColor;
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
-                TargetList[2] = targetDraw;
+                TargetList.Add(2, targetDraw);
                 updated = true;
+
             }
 
             if (target.RangeTarget3 != 0)
             {
+                if (TargetList.TryGetValue(3, out DRAW_STRUCT targetDraw))
+                {
+                    TargetList.Remove(3);
+                }
                 targetDraw.TimeStamp = DateTime.Now;
+                targetDraw.targetPosition = new Point[3];
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget3);
                 targetDraw.distance = CovertMtoF(target.RangeTarget3);
-                targetDraw.targetText = "[3] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
+                targetDraw.targetText = "[3] " + target.ThreatSideTarget3.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
-                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
+                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget3);
                 targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
+                targetDraw.targetTextColor = targetDraw.targetColor;
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
-                TargetList[3] = targetDraw;
+                TargetList.Add(3, targetDraw);
                 updated = true;
+
             }
 
             if (target.RangeTarget4 != 0)
             {
+                if (TargetList.TryGetValue(4, out DRAW_STRUCT targetDraw))
+                {
+                    TargetList.Remove(4);
+                }
                 targetDraw.TimeStamp = DateTime.Now;
+                targetDraw.targetPosition = new Point[3];
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget4);
                 targetDraw.distance = CovertMtoF(target.RangeTarget4);
-                targetDraw.targetText = "[4] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
+                targetDraw.targetText = "[4] " + target.ThreatSideTarget4.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
-                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
+                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget4);
                 targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
+                targetDraw.targetTextColor = targetDraw.targetColor;
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
-                TargetList[4] = targetDraw;
+                TargetList.Add(4, targetDraw);
                 updated = true;
+
             }
 
             if (target.RangeTarget5 != 0)
             {
+                if (TargetList.TryGetValue(5, out DRAW_STRUCT targetDraw))
+                {
+                    TargetList.Remove(5);
+                }
                 targetDraw.TimeStamp = DateTime.Now;
+                targetDraw.targetPosition = new Point[3];
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget5);
                 targetDraw.distance = CovertMtoF(target.RangeTarget5);
-                targetDraw.targetText = "[5] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
+                targetDraw.targetText = "[5] " + target.ThreatSideTarget5.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
-                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
+                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget5);
                 targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
+                targetDraw.targetTextColor = targetDraw.targetColor;
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
-                TargetList[5] = targetDraw;
+                TargetList.Add(5, targetDraw);
                 updated = true;
+
             }
 
             if (target.RangeTarget6 != 0)
             {
+                if (TargetList.TryGetValue(6, out DRAW_STRUCT targetDraw))
+                {
+                    TargetList.Remove(6);
+                }
                 targetDraw.TimeStamp = DateTime.Now;
+                targetDraw.targetPosition = new Point[3];
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget6);
                 targetDraw.distance = CovertMtoF(target.RangeTarget6);
-                targetDraw.targetText = "[6] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
+                targetDraw.targetText = "[6] " + target.ThreatSideTarget6.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
-                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
+                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget6);
                 targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
+                targetDraw.targetTextColor = targetDraw.targetColor;
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
-                TargetList[6] = targetDraw;
+                TargetList.Add(6, targetDraw);
                 updated = true;
+
             }
 
             if (target.RangeTarget7 != 0)
             {
+                if (TargetList.TryGetValue(7, out DRAW_STRUCT targetDraw))
+                {
+                    TargetList.Remove(7);
+                }
+                targetDraw.targetPosition = new Point[3];
                 targetDraw.TimeStamp = DateTime.Now;
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget7);
                 targetDraw.distance = CovertMtoF(target.RangeTarget7);
-                targetDraw.targetText = "[7] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
+                targetDraw.targetText = "[7] " + target.ThreatSideTarget7.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
-                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
+                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget7);
                 targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
+                targetDraw.targetTextColor = targetDraw.targetColor;
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
-                TargetList[7] = targetDraw;
+                TargetList.Add(7, targetDraw);
                 updated = true;
+
             }
 
             if (target.RangeTarget8 != 0)
             {
+                if (TargetList.TryGetValue(8, out DRAW_STRUCT targetDraw))
+                {
+                    TargetList.Remove(8);
+                }
                 targetDraw.TimeStamp = DateTime.Now;
+                targetDraw.targetPosition = new Point[3];
                 targetDraw.speed = ConvertMetersSecToMPH(target.SpeedTarget8);
                 targetDraw.distance = CovertMtoF(target.RangeTarget8);
-                targetDraw.targetText = "[8] " + target.ThreatSideTarget1.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
+                targetDraw.targetText = "[8] " + target.ThreatSideTarget8.ToString() + "\n" + targetDraw.speed.ToString() + " MPH Closing\n" + targetDraw.distance.ToString() + " FT Distance";
                 targetDraw.targetColor = GetColorByTargetSpeed(targetDraw.speed);
-                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget1);
+                targetDraw.targetPosition = PlotTargetPosition(targetDraw.distance, target.ThreatSideTarget8);
                 targetDraw.targetTextFont = new System.Drawing.Font("Arial", DISP_FONT_SIZE);
                 targetDraw.targetTextFormat = new System.Drawing.StringFormat();
+                targetDraw.targetTextColor = targetDraw.targetColor;
                 targetDraw.targetTextXpos = Convert.ToSingle(targetDraw.targetPosition[2].X + TARGET_SIZE + 10);//distance of text from triangle
                 targetDraw.targetTextYpos = Convert.ToSingle(targetDraw.targetPosition[2].Y);
-                TargetList[8] = targetDraw;
+                TargetList.Add(8, targetDraw);
                 updated = true;
+
             }
             return updated;
         }
@@ -270,8 +321,8 @@ namespace VariaRx
             double scalerY = Convert.ToDouble(this.Height) / 645.75f; //645.75 ft is max range of garmin unit Page 20 ANT+ Managed Network Document – Bike Radar Device Profile, Rev 1.0
             int scalerX = this.Width;
             int TARGET_SIDE_LEFT = TARGET_SIZE;
-            int TARGET_SIDE_MIDDLE = scalerX/2;
-            int TARGET_SIDE_RIGHT = scalerX - TARGET_SIZE + 50;
+            int TARGET_SIDE_MIDDLE = (scalerX/2) - 45;
+            int TARGET_SIDE_RIGHT = scalerX - (TARGET_SIZE + 100);
 
             int x3 = 0;
 
@@ -305,11 +356,11 @@ namespace VariaRx
             }
             else if (spd > NO_SPEED && spd <= SLOW_SPEED)
             {
-                return new SolidBrush(Color.Black);
+                return new SolidBrush(Color.Green);
             }
             else if (spd > SLOW_SPEED && spd <= MED_SPEED)
             {
-                return new SolidBrush(Color.DarkBlue);
+                return new SolidBrush(Color.DarkRed);
             }
             else if (spd > MED_SPEED)
             {
